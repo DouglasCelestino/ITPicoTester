@@ -1,0 +1,31 @@
+name: CI – Build C
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: [self-hosted, linux]
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v3
+
+      - name: Instalar toolchain C
+        run: |
+          sudo apt update
+          sudo apt install -y build-essential
+
+      - name: Compilar todo o código C em src/
+        run: |
+          mkdir -p build
+          # compila todos .c de src/ num executável build/app
+          gcc src/*.c -o build/app
+
+      - name: Verificar se o binário existe
+        run: |
+          if [ -x build/app ]; then
+            echo "✅ Build OK"
+          else
+            echo "❌ Falha na build" >&2
+            exit 1
+          fi
