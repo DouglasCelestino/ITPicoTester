@@ -1,31 +1,36 @@
-name: CI – Build C
+name: CI – Build C no Windows
 
 on: [push]
 
 jobs:
   build:
-    runs-on: [self-hosted, linux]
+    runs-on: [self-hosted, Windows, X64]
 
     steps:
       - name: Checkout do repositório
         uses: actions/checkout@v3
 
-      - name: Instalar toolchain C
+      - name: Instalar CMake e Toolchain ARM
+        shell: powershell
         run: |
-          sudo apt update
-          sudo apt install -y build-essential
+          choco install cmake --installargs '"ADD_CMAKE_TO_PATH=System"' -y
+          choco install gcc-arm-embedded -y
+          choco install make -y
 
-      - name: Compilar todo o código C em src/
+      - name: Compilar blink com CMake
+        shell: powershell
         run: |
-          mkdir -p build
-          # compila todos .c de src/ num executável build/app
-          gcc src/*.c -o build/app
+          mkdir build
+          cd build
+          cmake .. -G "MinGW Makefiles" -DPICO_SDK_PATH=lib/pico-sdk -DPICO_BOARD=pico
+          make
 
-      - name: Verificar se o binário existe
+      - name: Verificar se gerou blink.uf2
+        shell: powershell
         run: |
-          if [ -x build/app ]; then
-            echo "✅ Build OK"
-          else
-            echo "❌ Falha na build" >&2
+          if (Test-Path build\blink.uf2) {
+            Write-Host "✅ Build finalizada com sucesso!"
+          } else {
+            Write-Error "❌ Arquivo blink.uf2 não encontrado!"
             exit 1
-          fi
+          }
