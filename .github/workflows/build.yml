@@ -12,8 +12,8 @@ jobs:
 
       - name: Adicionar o caminho do GCC ao PATH
         run: |
-          echo "Adicionando D:\ucrt64\bin ao PATH"
-          $env:Path = "D:\ucrt64\bin;$env:Path"
+          echo "Adicionando C:\msys64\ucrt64\bin ao PATH"
+          $env:Path = "C:\msys64\ucrt64\bin;$env:Path"
           gcc --version
 
       - name: Criar pasta build
@@ -21,7 +21,7 @@ jobs:
 
       - name: Compilar hello.c
         run: |
-          $env:Path = "D:\ucrt64\bin;$env:Path"
+          $env:Path = "C:\msys64\ucrt64\bin;$env:Path"
           gcc src/hello.c -o build/hello.exe
 
       - name: Verificar se compilou
